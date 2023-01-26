@@ -23,6 +23,34 @@
 -------------- 1) Basic Scene ---------------------
 - The BasicScene.ts is in src/1BabylonScene
 - Then the component HelloWorld.vue import it so that App.vue (which import HelloWord.vue) can show it on the browser
+- Can zoom in/out with <^v>
+
+------------- 2) Standard Materials -------------------
+# Get textures from https://polyhaven.com/textures -> Choose texture -> Choose ||| next to download and download option AO JPG -> download all 4 of them and use them for different textures of StandardMaterial:
+ ```javascript 
+    /////////////////////////1//////////////////////////////
+    const diffuseTex = new Texture( //create a new texture based on a texture photo
+        "./textures/stone/stone_diffuse.jpg",
+        this.scene
+      );
+      groundMat.diffuseTexture = diffuseTex; //The basic texture of the material as viewed under a light.
+    /////////////////////////2//////////////////////////////
+      const normalTex = new Texture(
+        "./textures/stone/stone_normal.jpg",
+        this.scene
+      );
+      groundMat.bumpTexture = normalTex; //Bump mapping is a technique to simulate bump and dents on a rendered surface.
+      groundMat.invertNormalMapX = true;
+      groundMat.invertNormalMapY = true;
+    /////////////////////////3///////////////////////////////
+    const aoTex = new Texture("./textures/stone/stone_ao.jpg", this.scene);
+      groundMat.ambientTexture = aoTex; //it helps adding baked shadows into your material.
+    /////////////////////////4///////////////////////////////
+      const specTex = new Texture("./textures/stone/stone_spec.jpg", this.scene);
+      groundMat.specularTexture = specTex;
+ ```
+
+
 
 
 
