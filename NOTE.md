@@ -108,14 +108,14 @@ PBR lighting, surrounding is based on .env. It's another type of Material, just 
 - Make sure to have the Location 0 0 0, Rotation 0 0 0, Scale 1 1 1  
 - Can convert it to Mesh by clicking left but in this case, it's already had Mesh
 - Choose File->Export->gITF 2.0 
-   - -  Make sures Format is gITF(.glb) 
-   - -  Include: Normally dont check anything since we wanna use the entire object
-   - -  Makes sure Transform +YUp checked (by default) [Since the Y axe in Blender is like | and in BabylonJS is like _ ]
-   - - Geometry: 
-            - - - Check UVs and Normals
-            - - - Uncheck Vertex Colors
-            - - - Makes sure Materials is set to Export
-   - - Animation: Uncheck everything since the object doesnt have any animation
+   -  Make sures Format is gITF(.glb) 
+   -  Include: Normally dont check anything since we wanna use the entire object
+   -  Makes sure Transform +YUp checked (by default) [Since the Y axe in Blender is like | and in BabylonJS is like _ ]
+   - Geometry: 
+        - Check UVs and Normals
+        - Uncheck Vertex Colors
+        -  Makes sure Materials is set to Export
+   - Animation: Uncheck everything since the object doesnt have any animation
 - Upload the exported .glb file on https://sandbox.babylonjs.com/ to test its compability to BabylonJS (Check lighting, texture changes) by rolling it around + Click on the Display Inspector(Button looking like a box at the right bottom) to see Nodes, Materials,...
 - Put the file in /public/models/
 - Import Model:
