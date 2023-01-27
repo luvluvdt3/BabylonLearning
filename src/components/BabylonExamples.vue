@@ -1,20 +1,21 @@
 <template>
-  <div>
-    <h3>Babylon Examples</h3>
-    <canvas></canvas>
-  </div>
+<div>
+<h1>PBR Materials</h1>
+<canvas></canvas>
+</div>
+
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { StandardMaterials } from "../BabylonExemples/StandardMaterials";
+import { defineComponent } from 'vue';
+import {PBR} from '../BabylonExemples/PBR'
 export default defineComponent({
-  name: "BabylonExamples",
-  mounted() {
-    //this is called when the component is mounted
-    const canvas = document.querySelector("canvas")!; //gotta have "!" to tell typescript that it will never be null (weird stuff lol)
-    new StandardMaterials(canvas);
-  },
+  name: 'BabylonExamples',
+  mounted(){
+    const canvas = document.querySelector("canvas")!;
+    new PBR(canvas);
+  }
+  
 });
 </script>
 
