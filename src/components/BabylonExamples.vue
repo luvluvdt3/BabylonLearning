@@ -8,12 +8,12 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import {CustomModels} from '../BabylonExemples/CustomeModels';
+import {LightsShadows} from '../BabylonExemples/LightsShadows';
 export default defineComponent({
   name: 'BabylonExamples',
   mounted(){
     const canvas = document.querySelector("canvas")!;
-    new CustomModels(canvas);
+    new LightsShadows(canvas);
   }
   
 });

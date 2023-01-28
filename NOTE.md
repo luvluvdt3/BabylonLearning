@@ -5,7 +5,7 @@ To install globally framwork Vue.js
 
 ## If error "vue.ps1 cannot be loaded because running scripts is disabled on this system" :
  - Open Windows Powersell as Admin
- - Set-ExecutionPolicy -Scope LocalMachine Unrestricted   sau đó A
+ - Set-ExecutionPolicy -Scope LocalMachine Unrestricted  -> choose A
 
 ## vue create b101  (b101 is a random name0)
  - Y
@@ -27,6 +27,22 @@ Basically every components of BabylonJS
 
 ## npm i @babylonjs/loaders
 To load models
+
+## Websites:
+- General:
+    - https://polyhaven.com/
+- Texture:
+    - https://architextures.org/create
+    - https://en.eagle.cool/blog/post/free-textures
+    - https://gametextures.com/
+- Model:
+    - https://sketchfab.com/3d-models?date=week&features=downloadable&sort_by=-likeCount&cursor=bz0xJnA9MjE%3D
+    - https://www.kenney.nl/assets
+    - https://quaternius.com/
+- Tool:
+    - https://www.babylonjs.com/tools/ibl/
+    - https://sandbox.babylonjs.com/
+
 
 ## TODO:
 - Attention, if open the site with small screen then put it back to big screen-> all pixel flurry sh*t -> any solution?
@@ -67,7 +83,7 @@ To load models
 # --------------3)Physically Based Rendering (PBR)-------------------------
 PBR lighting, surrounding is based on .env. It's another type of Material, just like 2)Standard Material
 ## Download from https://polyhaven.com/hdris -> Download 2K HDR and then go to https://www.babylonjs.com/tools/ibl/ to convert it in to .env file -> save the file in /public/environment
-## ATTENTION: the link is not based on the file's location but the one of index.html in /public
+ATTENTION: the link is not based on the file's location but the one of index.html in /public
 ## If have the chessboard pattern-> the link to the .jpg is no good (I kinda like it though)
  - Now we can use it in the program:
  ```javascript
@@ -149,9 +165,10 @@ PBR lighting, surrounding is based on .env. It's another type of Material, just 
 ```
 ## Campfire Model:
 - Cool Free 2D, 3D, Sound here: https://www.kenney.nl/assets
-- So download the whole stuff from the website -> has A LOT of .glb for each object -> Put them all together using Blender (and yep idk how :v gotta learn Blender;-;)
+- So download the whole stuff from the website -> has A LOT of .glb for each object -> Put them all together using Blender (and yep idk how :v gotta learn Blender ;-;) -> Other option: use tool AssetForge but its not free ;-;
 - Again, check it with https://sandbox.babylonjs.com/ 
 
+# ------------------05) Dynamic Lights and Shadows---------------
 
 
 
