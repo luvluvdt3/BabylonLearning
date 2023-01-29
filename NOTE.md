@@ -43,17 +43,22 @@ To load models
     - https://www.babylonjs.com/tools/ibl/
     - https://sandbox.babylonjs.com/
 
-
+## Blender:
+- Move around: Middle mouse press
+- Pan around: SHIFT + Middle mouse
+- Zoon: Scroll mouse
 ## TODO:
 - Attention, if open the site with small screen then put it back to big screen-> all pixel flurry sh*t -> any solution?
 - Learn Blender =v=
 
 # -------------- 1) Basic Scene ---------------------
+[BasicScene]
 - The BasicScene.ts is in src/1BabylonScene
 - Then the component HelloWorld.vue import it so that App.vue (which import HelloWord.vue) can show it on the browser
 - Can zoom in/out with <^v>
 
 # ------------- 2) Standard Materials -------------------
+[StandardMaterials]
 ## Get textures from https://polyhaven.com/textures -> Choose texture -> Choose ||| next to download and download option AO JPG -> download all 4 of them and use them for different textures of StandardMaterial: (not necessarily 4 below, maybe even 3 or 5)
 ## Can even create my own here : https://architextures.org/create (quite limited though)
 ## Others: https://en.eagle.cool/blog/post/free-textures
@@ -81,6 +86,7 @@ To load models
  ```
 
 # --------------3)Physically Based Rendering (PBR)-------------------------
+[PBR]
 PBR lighting, surrounding is based on .env. It's another type of Material, just like 2)Standard Material
 ## Download from https://polyhaven.com/hdris -> Download 2K HDR and then go to https://www.babylonjs.com/tools/ibl/ to convert it in to .env file -> save the file in /public/environment
 ATTENTION: the link is not based on the file's location but the one of index.html in /public
@@ -118,6 +124,7 @@ ATTENTION: the link is not based on the file's location but the one of index.htm
 - Not sure why but this time tutor uses .bumpTexture, .albedoTexture, .metallicTexture, .emissiveTexture instead of 4 previous ones at 2). Maybe preferences? Or bc its PBR?
 
 # ---------------4) Importing Custom Models----------------------
+[CustomeModels]
 ## Get models from https://polyhaven.com/models/
 - Download it with option Blend (yep its a .zip)
 - Unzip it and open the .blend file with Blender
@@ -169,6 +176,65 @@ ATTENTION: the link is not based on the file's location but the one of index.htm
 - Again, check it with https://sandbox.babylonjs.com/ 
 
 # ------------------05) Dynamic Lights and Shadows---------------
+[LightsShadows]
+## Can check meshes of Lighting Scene on Blender:
+ - File -> Import -> glTF 2.0 (.glb/gltf) -> then choose the file (Appreciate the update of ver 2.8) In this case contains 3 meshes of 3 barrels + Environment(which is the brick wall) + lightTubes + ...
+ - Can put light on objects with Blender and use it in BabylonJS instead of do all the pointLights, arrays of meshes of tubes stuffs :v
+ ## Create Light: 
+ ```javascript
+    const pointLight = new PointLight(//another type of light
+        "pointLight",
+        new Vector3(0, 1, 0),
+        this.scene
+      );
+  
+      pointLight.diffuse = new Color3(172 / 255, 246 / 255, 250 / 255); //rgb color values (neon blue)
+      pointLight.intensity = 0.5;
+  
+      const pointClone = pointLight.clone("pointClone") as PointLight; //gotta do "as PointLight" to make it usable (since clones are Nullable by default)
+      this.CreateGizmos(pointLight); //if wanna check the lighting with the weird sphere
+      this.CreateGizmos(pointClone);
+      //make right and left tube's position the light position -> the 2 now have blue neon light comming from them
+      pointLight.parent = this.lightTubes[0]; 
+      pointClone.parent = this.lightTubes[1];
+ ```
+ ## Gizmo: (Weird shere helps to ajout the lighting manually)
+ ```javascript
+    CreateGizmos(customLight: Light): void { //the weird movable shere emitting light helps us better visualize the light/shadow 
+      //simulates the effect of Light passed in the parameter on the whole scenario (either DirectionalLight or HemisphericLight or PotinLight others)
+      const lightGizmo = new LightGizmo(); //Gizmo that enables viewing a light
+      lightGizmo.scaleRatio = 2;
+      lightGizmo.light = customLight;
+  
+      const gizmoManager = new GizmoManager(this.scene);
+      gizmoManager.positionGizmoEnabled = true;
+      gizmoManager.rotationGizmoEnabled = true;
+      gizmoManager.usePointerToAttachGizmos = false;
+      gizmoManager.attachToMesh(lightGizmo.attachedMesh);
+    }
+ ```
+ To use it:
+ ```javascript
+    this.CreateGizmos(spotLight);
+```
+ ## Create Shadow:
+ ``` javascript
+      //Allow light to make shadow
+      spotLight.shadowEnabled = true;
+      spotLight.shadowMinZ = 1;
+      spotLight.shadowMaxZ = 10;
+  
+      const shadowGen = new ShadowGenerator(2048, spotLight);//resolution of the texture, light's source
+      shadowGen.useBlurCloseExponentialShadowMap = true;//apply filter to the shadow(noting that there are many filters but support different types of lights) !ATTENTION: ONLY works if the light (in this case spotLight) has shadowMinZ and shadowMaxZ
+      //Apply shadows to objects:
+      this.ball.receiveShadows = true;
+      shadowGen.addShadowCaster(this.ball);
+  
+      this.models.map((mesh) => {
+        mesh.receiveShadows = true;
+        shadowGen.addShadowCaster(mesh);
+      });
+ ```
 
 
 
