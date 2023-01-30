@@ -47,6 +47,7 @@ To load models
 - Move around: Middle mouse press
 - Pan around: SHIFT + Middle mouse
 - Zoon: Scroll mouse
+- See material/texture of object: red round button at the right bottom (just right on the chessboard one)
 ## TODO:
 - Attention, if open the site with small screen then put it back to big screen-> all pixel flurry sh*t -> any solution?
 - Learn Blender =v=
@@ -179,7 +180,7 @@ ATTENTION: the link is not based on the file's location but the one of index.htm
 [LightsShadows]
 ## Can check meshes of Lighting Scene on Blender:
  - File -> Import -> glTF 2.0 (.glb/gltf) -> then choose the file (Appreciate the update of ver 2.8) In this case contains 3 meshes of 3 barrels + Environment(which is the brick wall) + lightTubes + ...
- - Can put light on objects with Blender and use it in BabylonJS instead of do all the pointLights, arrays of meshes of tubes stuffs :v
+ - Can put light on objects with Blender and use it in BabylonJS instead of do all the pointLights, arrays of meshes of tubes stuffs but only recommended for static objects :v (check out 6.)
  ## Create Light: 
  ```javascript
     const pointLight = new PointLight(//another type of light
@@ -236,6 +237,11 @@ ATTENTION: the link is not based on the file's location but the one of index.htm
       });
  ```
 
+# -----------------------06) Baked Lighting with Blender in BabylonJS--------------------------
+[BakedLighting]
+- Only recommended to create a static scene
+- This is a Blender tutorial and is very technical one so its easier to re-watch the video when needed: https://www.youtube.com/watch?v=jfWCLGREFt4 
+- The result is bust_demo.glb in /models
 
 
 

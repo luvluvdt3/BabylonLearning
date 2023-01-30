@@ -1,6 +1,6 @@
 <template>
 <div>
-<p>Custom Models</p>
+<p>Baked Lighting</p>
 <canvas></canvas>
 </div>
 
@@ -8,12 +8,12 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import {LightsShadows} from '../BabylonExemples/LightsShadows';
+import {BakedLighting} from '../BabylonExemples/BakedLighting'
 export default defineComponent({
   name: 'BabylonExamples',
   mounted(){
     const canvas = document.querySelector("canvas")!;
-    new LightsShadows(canvas);
+    new BakedLighting(canvas);
   }
   
 });
