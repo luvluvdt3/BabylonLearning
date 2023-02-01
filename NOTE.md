@@ -51,10 +51,11 @@ To load models
 ## TODO:
 - Attention, if open the site with small screen then put it back to big screen-> all pixel flurry sh*t -> any solution?
 - Learn Blender =v=
+- Fix bug the scene doesnt appear after loading but have to change the screen size to see it '-'
 
 # -------------- 1) Basic Scene ---------------------
 [BasicScene]
-- The BasicScene.ts is in src/1BabylonScene
+- The BasicScene.ts is in src/BabylonExemples/BabylonScene.ts
 - Then the component HelloWorld.vue import it so that App.vue (which import HelloWord.vue) can show it on the browser
 - Can zoom in/out with <^v>
 
@@ -243,5 +244,200 @@ ATTENTION: the link is not based on the file's location but the one of index.htm
 - This is a Blender tutorial and is very technical one so its easier to re-watch the video when needed: https://www.youtube.com/watch?v=jfWCLGREFt4 
 - The result is bust_demo.glb in /models
 
+# ------------------------07) Creating a Custom Loading Screen in BabylonJS---------------------
+*[CustomLoading]*
 
+*[CustomLoadingScreen]*
 
+*[/components/LoadingScreen.vue]* 
+
+*[/components/BabylonExamples.vue]*
+
+https://doc.babylonjs.com/features/featuresDeepDive/scene/customLoadingScreen 
+
+## Option 1: 
+(The loading bar with percentage)
+### In BabylonExamples.vue:
+```javascript
+ <template>
+  <main>
+    <div id="loader">
+      <p>Loading</p>
+
+      <div id="loadingContainer">
+        <div id="loadingBar"></div>
+      </div>
+
+      <p id="percentLoaded">0%</p>
+    </div>
+
+    <p>Custom Loading Screen</p>
+    <canvas></canvas>
+  </main>
+</template>
+<script lang="ts">
+import { defineComponent } from "vue";
+import { CustomLoading } from "@/BabylonExemples/CustomLoading";
+
+export default defineComponent({
+  name: "BabylonExamples",
+  data() {
+    return {
+      loaded: false,
+    };
+  },
+  mounted() {
+    const canvas = document.querySelector("canvas") as HTMLCanvasElement;
+    const loadingBar = document.getElementById("loadingBar") as HTMLElement;
+    const percentLoaded = document.getElementById(
+      "percentLoaded"
+    ) as HTMLElement;
+    const loader = document.getElementById("loader") as HTMLElement;
+    new CustomLoading(
+      canvas,
+      loadingBar,
+      percentLoaded,
+      loader,
+    );
+  },
+});
+</script>
+```
+### In CustomLoading:
+```javascript
+export class CustomLoading {
+  scene: Scene;
+  engine: Engine;
+  loadingScreen: CustomLoadingScreen;
+
+  constructor(
+    private canvas: HTMLCanvasElement,
+       //html elements from .vue 
+    private loadingBar: HTMLElement, 
+    private percentLoaded: HTMLElement,
+    private loader: HTMLElement,
+  ) {
+    this.engine = new Engine(this.canvas, true);
+
+    this.loadingScreen = new CustomLoadingScreen(
+      this.loadingBar,
+      this.percentLoaded,
+      this.loader
+    );
+
+    this.engine.loadingScreen = this.loadingScreen;//customize loading component (loading screen by default is loading stuff with BabylobJS's logo)
+
+    this.engine.displayLoadingUI();//turn on the loading stuff that later will be turned off at da end of method CreateEnvironment()
+
+    this.scene = this.CreateScene();
+
+    this.CreateEnvironment();
+
+    this.engine.runRenderLoop(() => {
+      this.scene.render();
+    });
+  }
+
+  .....
+
+  async CreateEnvironment(): Promise<void> {
+    await SceneLoader.ImportMeshAsync(
+      "",
+      "./models/",
+      "LightingScene.glb",
+      this.scene,
+      (evt) => {
+        let loadStatus = "";
+        if (evt.lengthComputable) { 
+          loadStatus = ((evt.loaded * 100) / evt.total).toFixed();
+        } 
+        else { //in case lengthComputable is false, gotta calculate it with loaded, or else it will just update status as "infinity"
+          loadStatus = (Math.floor(evt.loaded / (1024 * 1024) * 100.0) / 100.0)+"";
+      }
+        this.loadingScreen.updateLoadStatus(loadStatus);
+      }
+    );
+
+    this.engine.hideLoadingUI();//turn off the loading stuff
+  }
+}
+```
+
+## Option 2: 
+(The custom one with LoadingScreen.vue)
+### In BabylonExamples.vue:
+```javascript
+<template>
+  <main>
+    <LoadingScreen :isLoaded="loaded" /> 
+    <p>Custom Loading Screen</p>
+    <canvas></canvas>
+  </main>
+</template>
+
+<script lang="ts">
+import { defineComponent } from "vue";
+import { CustomLoading } from "@/BabylonExemples/CustomLoading";
+import LoadingScreen from "./LoadingScreen.vue";
+
+export default defineComponent({
+  name: "BabylonExamples",
+  components: { LoadingScreen },
+  data() {
+    return {
+      loaded: false,
+    };
+  },
+  mounted() {
+    const canvas = document.querySelector("canvas") as HTMLCanvasElement;
+    const loadingBar = document.getElementById("loadingBar") as HTMLElement;
+    const percentLoaded = document.getElementById(
+      "percentLoaded"
+    ) as HTMLElement;
+    const loader = document.getElementById("loader") as HTMLElement;
+    new CustomLoading(
+      canvas,
+      this.setLoaded
+    );
+  },
+  methods: {
+    setLoaded() {
+      this.loaded = true;
+    },
+  },
+});
+</script>
+```
+### In CustomLoading:
+```javascript
+ export class CustomLoading {
+  scene: Scene;
+  engine: Engine;
+  constructor(
+    private canvas: HTMLCanvasElement,
+    private setLoaded: () => void,
+  ) {
+    this.engine = new Engine(this.canvas, true);
+
+    this.scene = this.CreateScene();
+
+    this.CreateEnvironment();
+
+    this.engine.runRenderLoop(() => {
+      this.scene.render();
+    });
+  }
+
+.....
+
+  async CreateEnvironment(): Promise<void> {
+    await SceneLoader.ImportMeshAsync(
+      "",
+      "./models/",
+      "LightingScene.glb",
+    );
+
+    this.setLoaded();
+  }
+}
+  ```

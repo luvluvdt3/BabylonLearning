@@ -19,16 +19,18 @@ export default defineComponent({
 * {
   padding: 0;
   margin: 0;
+}
+#app {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
   background-image: url("../public/images/Background_Dots.png");
   background-size: cover;
   background-position: center;
-}
-#app {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 4rem;
+  box-sizing: border-box;
+  padding: 2rem;
 }
 </style>
