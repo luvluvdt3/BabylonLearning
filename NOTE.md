@@ -42,7 +42,9 @@ To load models
 - Tool:
     - https://www.babylonjs.com/tools/ibl/
     - https://sandbox.babylonjs.com/
-
+- To explore:
+    - https://www.youtube.com/watch?v=FaMJd0f34rA
+    - https://www.babylonjs.com/
 ## Blender:
 - Move around: Middle mouse press
 - Pan around: SHIFT + Middle mouse
@@ -54,13 +56,13 @@ To load models
 - Fix bug the scene doesnt appear after loading but have to change the screen size to see it '-'
 
 # -------------- 1) Basic Scene ---------------------
-[BasicScene]
+*[BasicScene]*
 - The BasicScene.ts is in src/BabylonExemples/BabylonScene.ts
 - Then the component HelloWorld.vue import it so that App.vue (which import HelloWord.vue) can show it on the browser
 - Can zoom in/out with <^v>
 
 # ------------- 2) Standard Materials -------------------
-[StandardMaterials]
+*[StandardMaterials]*
 ## Get textures from https://polyhaven.com/textures -> Choose texture -> Choose ||| next to download and download option AO JPG -> download all 4 of them and use them for different textures of StandardMaterial: (not necessarily 4 below, maybe even 3 or 5)
 ## Can even create my own here : https://architextures.org/create (quite limited though)
 ## Others: https://en.eagle.cool/blog/post/free-textures
@@ -88,7 +90,7 @@ To load models
  ```
 
 # --------------3)Physically Based Rendering (PBR)-------------------------
-[PBR]
+*[PBR]*
 PBR lighting, surrounding is based on .env. It's another type of Material, just like 2)Standard Material
 ## Download from https://polyhaven.com/hdris -> Download 2K HDR and then go to https://www.babylonjs.com/tools/ibl/ to convert it in to .env file -> save the file in /public/environment
 ATTENTION: the link is not based on the file's location but the one of index.html in /public
@@ -126,7 +128,7 @@ ATTENTION: the link is not based on the file's location but the one of index.htm
 - Not sure why but this time tutor uses .bumpTexture, .albedoTexture, .metallicTexture, .emissiveTexture instead of 4 previous ones at 2). Maybe preferences? Or bc its PBR?
 
 # ---------------4) Importing Custom Models----------------------
-[CustomeModels]
+*[CustomeModels]*
 ## Get models from https://polyhaven.com/models/
 - Download it with option Blend (yep its a .zip)
 - Unzip it and open the .blend file with Blender
@@ -178,7 +180,7 @@ ATTENTION: the link is not based on the file's location but the one of index.htm
 - Again, check it with https://sandbox.babylonjs.com/ 
 
 # ------------------05) Dynamic Lights and Shadows---------------
-[LightsShadows]
+*[LightsShadows]*
 ## Can check meshes of Lighting Scene on Blender:
  - File -> Import -> glTF 2.0 (.glb/gltf) -> then choose the file (Appreciate the update of ver 2.8) In this case contains 3 meshes of 3 barrels + Environment(which is the brick wall) + lightTubes + ...
  - Can put light on objects with Blender and use it in BabylonJS instead of do all the pointLights, arrays of meshes of tubes stuffs but only recommended for static objects :v (check out 6.)
@@ -200,7 +202,7 @@ ATTENTION: the link is not based on the file's location but the one of index.htm
       pointLight.parent = this.lightTubes[0]; 
       pointClone.parent = this.lightTubes[1];
  ```
- ## Gizmo: (Weird shere helps to ajout the lighting manually)
+ ## Gizmo: (Weird sphere helps to ajout the lighting manually)
  ```javascript
     CreateGizmos(customLight: Light): void { //the weird movable shere emitting light helps us better visualize the light/shadow 
       //simulates the effect of Light passed in the parameter on the whole scenario (either DirectionalLight or HemisphericLight or PotinLight others)
@@ -239,7 +241,7 @@ ATTENTION: the link is not based on the file's location but the one of index.htm
  ```
 
 # -----------------------06) Baked Lighting with Blender in BabylonJS--------------------------
-[BakedLighting]
+*[BakedLighting]*
 - Only recommended to create a static scene
 - This is a Blender tutorial and is very technical one so its easier to re-watch the video when needed: https://www.youtube.com/watch?v=jfWCLGREFt4 
 - The result is bust_demo.glb in /models
@@ -435,9 +437,20 @@ export default defineComponent({
       "",
       "./models/",
       "LightingScene.glb",
+      this.scene,
     );
 
     this.setLoaded();
   }
 }
   ```
+
+# --------------08) Camera Mechanics-----------------
+*[CameraMechanics.ts]* 
+*[ProductPreview.vue]* 
+## Different Types of Cameras:
+https://babylonjsguide.github.io/basics/Cameras#:~:text=The%20two%20standard%20cameras%20are,which%20is%20an%20orbital%20camera. 
+- Universal Camera: The Universal Camera is now the default camera used by Babylon.js if nothing is specified, and it’s your best choice if you’d like to have a FPS-like control in your scene. Controlled by the keyboard, mouse, touch or gamepad 
+- Arc Rotate Camera: This camera always points towards a given target position and can be rotated around that target with the target as the centre of rotation. It can be controlled with cursors and mouse, or with touch events.
+- Follow Camera - this takes a mesh as a target and follows it as it moves. 
+-Others: Anaglyph Camera, Device Orientation Cameras, Virtual Joysticks Camera, Virtual Reality Camera

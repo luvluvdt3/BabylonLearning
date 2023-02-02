@@ -1,16 +1,17 @@
 <template>
   <div id="app">
-    <BabylonExamples />
+    <ProductPreview />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import BabylonExamples from "./components/BabylonExamples.vue";
+import ProductPreview from "./components/ProductPreview.vue";
+
 export default defineComponent({
   name: "App",
   components: {
-    BabylonExamples,
+    ProductPreview,
   },
 });
 </script>
@@ -19,7 +20,9 @@ export default defineComponent({
 * {
   padding: 0;
   margin: 0;
+  box-sizing: border-box;
 }
+
 #app {
   width: 100vw;
   height: 100vh;
@@ -27,10 +30,9 @@ export default defineComponent({
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  background-image: url("../public/images/Background_Dots.png");
+  /* background-image: url("../public/images/Background_Dots.png");
   background-size: cover;
   background-position: center;
-  box-sizing: border-box;
-  padding: 2rem;
+  padding: 2rem; */
 }
 </style>
