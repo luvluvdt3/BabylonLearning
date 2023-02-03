@@ -454,3 +454,57 @@ https://babylonjsguide.github.io/basics/Cameras#:~:text=The%20two%20standard%20c
 - Arc Rotate Camera: This camera always points towards a given target position and can be rotated around that target with the target as the centre of rotation. It can be controlled with cursors and mouse, or with touch events.
 - Follow Camera - this takes a mesh as a target and follows it as it moves. 
 -Others: Anaglyph Camera, Device Orientation Cameras, Virtual Joysticks Camera, Virtual Reality Camera
+
+# ---------------------9) Mesh Actions------------------
+- Types of ActionManager: NothingTrigger, On CenterPickTrigger, OnDoublePickTrigger, On EveryFrameTrigger,...
+https://doc.babylonjs.com/typedoc/classes/BABYLON.ActionManager 
+
+```javascript
+  this.cube.actionManager = new ActionManager(this.scene);
+    this.cube.actionManager.registerAction(
+      new SetValueAction( //triggerOption - target - propertyPath - value - ?condition(optional)
+        ActionManager.OnPickDownTrigger, //like onClick 
+        this.cube, //object to be modified onClick
+        "scaling", //ajout the scaling of the object above onClick
+        new Vector3(1.5, 1.5, 1.5)//new value of the object's scaling
+        //Summary: onClick: this.cube.scaling = new Vector(...)
+      )
+    );
+```
+```javascript
+    this.sphere.actionManager = new ActionManager(this.scene);
+    this.sphere.actionManager
+      .registerAction( //when click first
+        new InterpolateValueAction( //trigger option - target - propertyPath - value - ?duration - ?condition - ?stopOtherAnimation -?onInterpolationDone()
+          ActionManager.OnPickDownTrigger,
+          this.sphereMat,
+          "roughness",
+          0,
+          3000 
+          //Summary: onClick: this.shereMat.roughness gradually changes to 0 (meaning mirror-like effect) within 3 secs
+        )
+      )
+      .then( //if click again
+        new InterpolateValueAction(
+          ActionManager.NothingTrigger, 
+          this.sphereMat,
+          "roughness",
+          1,
+          1000
+          //Summary: onClick again: turn it to a non-mirror surface again
+        )
+      ); //So when the user clicks on sphere for the first time-> turn it mirror-like, click another time-> turn it rough again
+```
+```javascript
+    this.scene.actionManager = new ActionManager(this.scene);
+    this.scene.actionManager.registerAction(
+      new IncrementValueAction(//trigger option - target - propertyPath - value - ?condition
+        ActionManager.OnEveryFrameTrigger, //do this action through out the whole time as soon as the scene is loaded
+        this.cylinder,
+        "rotation.x",
+        -0.01
+        //Summary: keeps cylinder keeps on rotating 
+      )
+    );
+```
+  
