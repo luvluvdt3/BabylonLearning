@@ -42,6 +42,7 @@ To load models
 - Tool:
     - https://www.babylonjs.com/tools/ibl/
     - https://sandbox.babylonjs.com/
+    - https://www.toptal.com/developers/keycode
 - To explore:
     - https://www.youtube.com/watch?v=FaMJd0f34rA
     - https://www.babylonjs.com/
@@ -453,9 +454,10 @@ https://babylonjsguide.github.io/basics/Cameras#:~:text=The%20two%20standard%20c
 - Universal Camera: The Universal Camera is now the default camera used by Babylon.js if nothing is specified, and it’s your best choice if you’d like to have a FPS-like control in your scene. Controlled by the keyboard, mouse, touch or gamepad 
 - Arc Rotate Camera: This camera always points towards a given target position and can be rotated around that target with the target as the centre of rotation. It can be controlled with cursors and mouse, or with touch events.
 - Follow Camera - this takes a mesh as a target and follows it as it moves. 
--Others: Anaglyph Camera, Device Orientation Cameras, Virtual Joysticks Camera, Virtual Reality Camera
+- Others: Anaglyph Camera, Device Orientation Cameras, Virtual Joysticks Camera, Virtual Reality Camera
 
 # ---------------------9) Mesh Actions------------------
+*[MeshAction.ts]*
 - Types of ActionManager: NothingTrigger, On CenterPickTrigger, OnDoublePickTrigger, On EveryFrameTrigger,...
 https://doc.babylonjs.com/typedoc/classes/BABYLON.ActionManager 
 
@@ -507,4 +509,64 @@ https://doc.babylonjs.com/typedoc/classes/BABYLON.ActionManager
       )
     );
 ```
+# -----------------------10) First Person Controller-----------------------
+*[FirstPersonController.ts]*
+https://doc.babylonjs.com/features/featuresDeepDive/cameras/camera_collisions
+```javascript
+CreateScene(): Scene {
+    const scene = new Scene(this.engine);
+    new HemisphericLight("hemi", new Vector3(0, 1, 0), this.scene);
+
+    scene.onPointerDown = (evt) => {
+      if (evt.button === 0) this.engine.enterPointerlock(); //if leftClick -> The mouse can control the camera, like turning it around (! will prevent the mouse from clicking any else)
+      if (evt.button === 1) this.engine.exitPointerlock(); //if middleClick-> turn off the PointerLock (by default can escape the PointerLock with [esc], can still do)
+      //tried evt.button === 0 and bugged a lil bit =w=  
+    };
+
+    const framesPerSecond = 60; //to be able have a smooth control of the scene's gravity. Can be higher
+    const gravity = -9.81; //typical gravity value
+    scene.gravity = new Vector3(0, gravity / framesPerSecond, 0); //set the gravity of the scene
+    scene.collisionsEnabled = true; //avoid the camera going in/pass objects, ONLY works when collisions are checked in meshs -> in CreateEnvironment()  and the camera's checkCollison is also checked -> in CreateController()
+
+    return scene;
+  }
+  ```
+  ```javascript
+  async CreateEnvironment(): Promise<void> {
+    const { meshes } = await SceneLoader.ImportMeshAsync(
+      "",
+      "./models/",
+      "Prototype_Level.glb",
+      this.scene
+    );
+
+    meshes.map((mesh) => { // checks collison of all the mesh (can skip the meshes that you wanna go in/through in here)
+      mesh.checkCollisions = true;
+    });
+  }
+```
+```javascript
+  CreateController(): void {
+    const camera = new FreeCamera("camera", new Vector3(0, 10, 0), this.scene); //y=10 so that the camera is a little higher to the ground
+    camera.attachControl();
+
+    camera.applyGravity = true; //apply the gravity of the scene declared above to the camera
+    camera.checkCollisions = true; 
+
+    camera.ellipsoid = new Vector3(1, 1, 1); //default to size (0.5, 1, 0.5). These setups above only works with this one defined. 
+
+    camera.minZ = 0.45; //camera's min distance of z to an object-> avoid clipping  
+    camera.speed = 0.75; //camera's moving speed
+    camera.angularSensibility = 4000; //camera's rotation speed (default:2000) the bigger the slower
+
+    camera.keysUp.push(87); //87 in keycode = W
+    camera.keysLeft.push(65); //65 = A
+    camera.keysDown.push(83); //83 = S
+    camera.keysRight.push(68); //68 = D
+    //Can use both <^v> and WASD to move the camera around
+  }
+```
+- Find keycode on https://www.toptal.com/developers/keycode
+
+
   

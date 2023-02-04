@@ -1,20 +1,20 @@
 <template>
   <main>
-    <p>Mesh Actions</p>
+    <p>First Person Controller</p>
     <canvas></canvas>
   </main>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { MeshActions } from "@/BabylonExemples/MeshActions";
+import { FirstPersonController } from "@/BabylonExemples/FirstPersonController";
 
 export default defineComponent({
   name: "BabylonExamples",
 
   mounted() {
     const canvas = document.querySelector("canvas") as HTMLCanvasElement;
-    new MeshActions(canvas);
+    new FirstPersonController(canvas);
   },
 });
 </script>
