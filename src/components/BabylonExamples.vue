@@ -1,20 +1,20 @@
 <template>
   <main>
-    <p>Physics Impostors</p>
+    <p>Collisions and Triggers</p>
     <canvas></canvas>
   </main>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { PhysicsImpostors } from "@/BabylonExemples/PhysicsImpostors";
+import { CollisionsTriggers } from "@/BabylonExemples/CollisionsTriggers";
 
 export default defineComponent({
   name: "BabylonExamples",
 
   mounted() {
     const canvas = document.querySelector("canvas") as HTMLCanvasElement;
-    new PhysicsImpostors(canvas);
+    new CollisionsTriggers(canvas);
   },
 });
 </script>

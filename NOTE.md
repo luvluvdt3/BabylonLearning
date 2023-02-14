@@ -572,7 +572,7 @@ CreateScene(): Scene {
 - Find keycode on https://www.toptal.com/developers/keycode
 
 # ---------------11 ) Physics Impostors-------------
-*[PhysicsImpostors]
+*[PhysicsImpostors]*
 ```javascript
   scene.enablePhysics(//gravity - ?plugin
       new Vector3(0, -9.81, 0), //typical Earth's gravity 
@@ -618,4 +618,183 @@ const sphere = MeshBuilder.CreateSphere("sphere", { diameter: 3 });
       { mass: 1, restitution: 0.8 }
     );
   //can see the shere rolling down since it was pushed by the box 
+```
+
+# -----------------------12) Collisions and Triggers-------------------------
+*[CollisionsTriggers]*
+*[Prototype_Level2.glb]*
+## Vers 1: Box and sphere falling down at the same time, box turn x3 bigger as soon as it hit the ground
+```javascript
+  constructor(private canvas: HTMLCanvasElement) {
+    this.engine = new Engine(this.canvas, true);
+    this.scene = this.CreateScene();
+    this.CreateEnvironment();
+    this.CreateImpostors();
+    this.engine.runRenderLoop(() => {
+      this.scene.render();
+    });
+  }
+
+  CreateScene(): Scene {
+    ...
+  }
+
+  async CreateEnvironment(): Promise<void> {
+    ...
+  }
+
+  CreateImpostors(): void {
+    this.box = MeshBuilder.CreateBox("box", { size: 2 });
+    this.box.position = new Vector3(0, 3, 0);
+
+    this.box.physicsImpostor = new PhysicsImpostor(
+      this.box,
+      PhysicsImpostor.BoxImpostor,
+      { mass: 1, restitution: 1 }
+    );
+
+    this.ground = MeshBuilder.CreateGround("ground", {
+      width: 40,
+      height: 40,
+    });
+
+    this.ground.position.y = 0.25;
+
+    this.ground.isVisible = false;
+
+    this.ground.physicsImpostor = new PhysicsImpostor(
+      this.ground,
+      PhysicsImpostor.BoxImpostor,
+      { mass: 0, restitution: 1 }
+    );
+
+    this.sphere = MeshBuilder.CreateSphere("sphere", { diameter: 2 });
+    this.sphere.position = new Vector3(0, 8, 0);
+
+    this.sphere.physicsImpostor = new PhysicsImpostor(
+      this.sphere,
+      PhysicsImpostor.SphereImpostor,
+      { mass: 1, restitution: 1, friction: 1 }
+    );
+
+    this.box.physicsImpostor.registerOnPhysicsCollide( ////object - function (doesnt wanna pass the function like ()=>{} its not really a proper way to use it since it's be difficult to "unregister" it later on)
+      this.sphere.physicsImpostor,
+      this.DetectCollisions
+    );
+  }
+
+  DetectCollisions(boxCol: PhysicsImpostor, colAgainst: any): void { //when there's a collison between boxCol and another object, use any instead of PhysicsImpostor to avoid the bullshit with js complaining about arrays of PhysicsImpostor
+    boxCol.object.scaling = new Vector3(3, 3, 3);//whenever there is a collison, the boxCol will x3 in size
+    boxCol.setScalingUpdated();//keeps the new x3 size even after the collison and not just the moment of collison
+  }
+```
+
+## Vers 2: Sphere turn red as soon as it hit the box
+The same as above, just changes in DetectCollisions()
+```javascript
+    DetectCollisions(boxCol: PhysicsImpostor, colAgainst: PhysicsImpostor): void {
+      const redMat = new StandardMaterial("mat", this.scene); //the mat that helps bouncing balance the object
+      redMat.diffuseColor = new Color3(1, 0, 0); //red color
+      (colAgainst.object as AbstractMesh).material = redMat; //have to use as AbstractMesh to be able to get access to material -> everytime anything collides with boxCol, it will turn red
+    }
+```
+
+## Vers 3: The box and the ground turn red while touching the sphere
+```javascript
+ CreateImpostors(): void {
+    
+    ...
+
+    this.ground.position.y = 0.25; //slightly above the ground
+
+    this.ground.isVisible = true;
+
+    ...
+    // this.box.physicsImpostor.registerOnPhysicsCollide( ////object - function (doesnt wanna pass the function like ()=>{} its not really a proper way to use it since it's be difficult to "unregister" it later on)
+    //   this.sphere.physicsImpostor,
+    //   this.DetectCollisions
+    // );
+
+    this.sphere.physicsImpostor.registerOnPhysicsCollide( //when the sphere hit the box
+      [this.box.physicsImpostor, this.ground.physicsImpostor], //this is how to put 2+ physicsImpostor
+      this.DetectCollisions
+    );
+
+  }
+
+  DetectCollisions(boxCol: PhysicsImpostor, colAgainst: any): void { //when there's a collison between boxCol and another object, use any instead of PhysicsImpostor to avoid the bullshit with js complaining about arrays of PhysicsImpostor
+    const redMat = new StandardMaterial("mat", this.scene);
+    redMat.diffuseColor = new Color3(1, 0, 0);
+    (colAgainst.object as AbstractMesh).material = redMat;
+  }
+```
+
+## Vers 4: Weird unregister stuff: (do basically nothing lol)
+```javascript
+  CreateImpostors(): void {
+
+    ...
+
+    this.sphere.physicsImpostor.unregisterOnPhysicsCollide(
+      this.ground.physicsImpostor,
+      this.DetectCollisions
+    );
+  }
+```
+
+## Vers 5: Ball jumping on a floor mat and console out number of jump
+```javascript
+  constructor(private canvas: HTMLCanvasElement) {
+    ...
+    this.DetectTrigger();
+    ...
+  }
+
+  CreateScene(): Scene {
+    ...
+  }
+
+  async CreateEnvironment(): Promise<void> {
+    ...
+  }
+
+  CreateImpostors(): void {
+    this.ground = MeshBuilder.CreateGround("ground", {
+      width: 40,
+      height: 40,
+    });
+
+    this.ground.position.y = 0.25; //slightly above the ground
+
+    this.ground.isVisible = false;
+
+    this.ground.physicsImpostor = new PhysicsImpostor(
+      this.ground,
+      PhysicsImpostor.BoxImpostor,
+      { mass: 0, restitution: 1 }
+    );
+
+    this.sphere = MeshBuilder.CreateSphere("sphere", { diameter: 2 });
+    this.sphere.position = new Vector3(0, 8, 0);
+
+    this.sphere.physicsImpostor = new PhysicsImpostor(
+      this.sphere,
+      PhysicsImpostor.SphereImpostor,
+      { mass: 1, restitution: 1, friction: 1 }
+    );
+  }
+
+  DetectTrigger(): void { //creates a small piece of ground that sphere jumps onto and console out every time the ball hit that ground 
+    const box = MeshBuilder.CreateBox("box", { width: 4, height: 1, depth: 4 }); 
+    box.position.y = 0.5;
+    box.visibility = 0.25;
+
+    //let counter = 0;
+
+    this.scene.registerBeforeRender(() => {
+         if (box.intersectsMesh(this.sphere)) counter++;
+         //console.log("intersect?", box.intersectsMesh(this.sphere)); //print out true if the sphere is "touching" the ground piece, false if not
+         console.log(counter); //1 10 19 ...  (+9 and not +1 every time lol) 
+    });
+  }
 ```
