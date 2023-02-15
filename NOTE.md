@@ -798,3 +798,111 @@ The same as above, just changes in DetectCollisions()
     });
   }
 ```
+
+# -------------------13) Physics Velocity-------------------------
+*[PhysicsVelocity]*
+## Vers 1: Rocket going up and stops and fall down onClick
+```javascript
+async CreateRocket(): Promise<void> {
+    const { meshes } = await SceneLoader.ImportMeshAsync(
+      "",
+      "/models/",
+      "toon_rocket.glb",
+      this.scene
+    );
+
+    const rocketCol = MeshBuilder.CreateBox("rocketCol", { //a mesh that will cover the rocket
+      width: 1,
+      height: 1.7,
+      depth: 1, //overall ressembles the shape of the rocket
+    });
+
+    rocketCol.position.y = 0.85; //since its half is kinda underground so to make it even to the ground, gotta do math: height/2 = 1.7/2 = 0.85
+    rocketCol.visibility = 0; //comment this line to see the rocketCol covering the rocket
+
+    rocketCol.physicsImpostor = new PhysicsImpostor(
+      rocketCol, //object
+      PhysicsImpostor.BoxImpostor, //type
+      { mass: 1 } //_option?
+    );
+
+    meshes[0].setParent(rocketCol);//makes the box the child of rocketCol->connects to one another-> one moves, the other follows
+    //(!) .setParent and NOT .parent=... since it will put rocketCol just above the center of the rocket
+    const rocketPhysics = ()=>{
+      rocketCol.physicsImpostor.setLinearVelocity(new Vector3(0,1,0)); //x,y,z
+      //x=0->object set straight up
+      //y=1-> velocity exists-> at the beginning, the object would bound quite hard (can increase the speed by making y bigger(like y=10 for ex))
+      rocketCol.physicsImpostor.setAngularVelocity(new Vector3(0,5,0)); //makes it spinning spinning SPINNINGGGG. Again, can modify the y to control the speed
+      this.camera.position = new Vector3( //so that the camera could follow the rocket
+      rocketCol.position.x,
+      rocketCol.position.y,
+      this.camera.position.z
+      )
+    }
+    this.scene.registerBeforeRender(rocketPhysics);//while rerendering the frame(which happens 60 times per second, rocketCol would be rerendered too-> the pop up effect of velocity at the beginning would continute-> the rocket would be  flying forever instead of just bounce at the beginning and then go down). Same case with spinning & camera
+
+    let gameOver = false;
+
+    if (!gameOver) this.scene.registerBeforeRender(rocketPhysics);
+
+    this.scene.onPointerDown = () => {
+      gameOver = true; 
+      this.scene.unregisterBeforeRender(rocketPhysics); 
+      //stop the render effect of rocketPhysics() when we click the mouse -> rocket falls down
+    };
+  }
+```
+
+## Version 2: Rocket flying to the left 
+```javascript
+async CreateRocket(): Promise<void> {
+    const { meshes } = await SceneLoader.ImportMeshAsync(
+      "",
+      "/models/",
+      "toon_rocket.glb",
+      this.scene
+    );
+
+    const rocketCol = MeshBuilder.CreateBox("rocketCol", { //a mesh that will cover the rocket
+      width: 1,
+      height: 1.7,
+      depth: 1, //overall ressembles the shape of the rocket
+    });
+
+    rocketCol.position.y = 0.85; //since its half is kinda underground so to make it even to the ground, gotta do math: height/2 = 1.7/2 = 0.85
+    rocketCol.visibility = 0; //comment this line to see the rocketCol covering the rocket
+
+    rocketCol.physicsImpostor = new PhysicsImpostor(
+      rocketCol, //object
+      PhysicsImpostor.BoxImpostor, //type
+      { mass: 1 } //_option?
+    );
+
+    meshes[0].setParent(rocketCol);//makes the box the child of rocketCol->connects to one another-> one moves, the other follows
+    //(!) .setParent and NOT .parent=... since it will put rocketCol just above the center of the rocket
+    rocketCol.rotate(Vector3.Forward(), 1.5); //Vector3.Forward() = Vector3(0,0,1), degree of rotation=1.5-> the rocket isnt straight up anymore but heads to the left
+
+    const rocketPhysics = ()=>{
+      this.camera.position = new Vector3( //so that the camera could follow the rocket
+      rocketCol.position.x,
+      rocketCol.position.y,
+      this.camera.position.z
+      )
+      rocketCol.physicsImpostor.setLinearVelocity(rocketCol.up.scale(5)); //not using Vector3 anymore. To make it keep moving forward to the left
+      //rocketCol.physicsImpostor.setLinearVelocity(new Vector3(0,1,0)); 
+      rocketCol.physicsImpostor.setAngularVelocity(rocketCol.up);//to keep it spinning
+     // rocketCol.physicsImpostor.setAngularVelocity(new Vector3(0,5,0));
+    }
+    this.scene.registerBeforeRender(rocketPhysics);//while rerendering the frame(which happens 60 times per second, rocketCol would be rerendered too-> the pop up effect of velocity at the beginning would continute-> the rocket would be  flying forever instead of just bounce at the beginning and then go down). Same case with spinning & camera
+
+    let gameOver = false;
+
+    if (!gameOver) this.scene.registerBeforeRender(rocketPhysics);
+
+    this.scene.onPointerDown = () => {
+      gameOver = true; 
+      this.scene.unregisterBeforeRender(rocketPhysics); 
+      //stop the render effect of rocketPhysics() when we click the mouse 
+    };
+  }
+```
