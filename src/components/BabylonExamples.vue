@@ -1,18 +1,18 @@
 <template>
   <main>
-    <p>Physics Velocity</p>
+    <p>Physics Forces</p>
     <canvas></canvas>
   </main>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { PhysicsVelocity } from "@/BabylonExemples/PhysicsVelocity";
+import { PhysicsForces } from "@/BabylonExemples/PhysicsForces";
 export default defineComponent({
   name: "BabylonExamples",
   mounted() {
     const canvas = document.querySelector("canvas") as HTMLCanvasElement;
-    new PhysicsVelocity(canvas);
+    new PhysicsForces(canvas);
   },
 });
 </script>
