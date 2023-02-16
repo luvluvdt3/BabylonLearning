@@ -1013,4 +1013,117 @@ async CreateRocket(): Promise<void> {
     }
 ```
 
+# -------------------------15) Raycasting-------------------------
+*[Raycasting]*
+- Raycast is an invisible line that is created with: 
+  - Origin(Vector3) :  Where it starts
+  - Direction(Vector3) 
+  - Length(Number)
+- Is used mostly for hitscan: use Raycast to apply force onto the object INSTANTLY (normally if we use another object to apply the force, it still takes time for that object to travel to the target)
+```javascript
+
+export class Raycasting {
+  ...
+  splatters: PBRMaterial[];
+
+  constructor(private canvas: HTMLCanvasElement) {
+    ...
+  }
+
+  CreateScene(): Scene {
+    ...
+  }
+
+  async CreatePhysics(): Promise<void> {
+    const ammo = await Ammo();
+    const physics = new AmmoJSPlugin(true, ammo);
+    this.scene.enablePhysics(new Vector3(0, -9.81, 0), physics);
+
+    this.CreateImpostors();
+  }
+
+  async CreateEnvironment(): Promise<void> {
+    ...
+  }
+
+  CreateImpostors(): void {
+    
+    ...
+
+    const sphere = MeshBuilder.CreateSphere("sphere", { diameter: 3 });
+    const sphereMat = new PBRMaterial("sphereMat", this.scene);
+    sphereMat.roughness = 1;
+
+    sphere.position.y = 3;
+
+    sphereMat.albedoColor = new Color3(1, 0.5, 0);
+    sphere.material = sphereMat;
+
+    sphere.physicsImpostor = new PhysicsImpostor(
+      sphere,
+      PhysicsImpostor.SphereImpostor,
+      { mass: 20, friction: 1 }
+    );
+  }
+
+  CreateTextures(): void {
+    const blue = new PBRMaterial("blue", this.scene);
+    const orange = new PBRMaterial("orange", this.scene);
+    const green = new PBRMaterial("green", this.scene);
+
+    blue.roughness = 1;
+    orange.roughness = 1;
+    green.roughness = 1;
+
+    blue.albedoTexture = new Texture("./textures/blue.png", this.scene);
+    green.albedoTexture = new Texture("./textures/green.png", this.scene);
+    orange.albedoTexture = new Texture("./textures/orange.png", this.scene);
+
+    blue.albedoTexture.hasAlpha = true; //to be able to use transparency
+    orange.albedoTexture.hasAlpha = true;
+    green.albedoTexture.hasAlpha = true;
+
+    blue.zOffset = -0.25; //slightly toward the camera, to avoid the material being too close to the surface of the object that can cause flickering bug
+    orange.zOffset = -0.25;
+    green.zOffset = -0.25;
+
+    this.splatters = [blue, orange, green]; 
+    //create and put these 3-color materials in splatters array declared in constructor
+  }
+
+  CreatePickingRay(): void {
+    this.scene.onPointerDown = () => {
+      const ray = this.scene.createPickingRay(
+        this.scene.pointerX, //the target position will be based on where the mouse click, not the scene's center by default
+        this.scene.pointerY,
+        Matrix.Identity(), 
+        this.camera
+      ); //onClick -> set the target of the ray to mouse click's positon
+
+      const raycastHit = this.scene.pickWithRay(ray);
+
+      if (raycastHit.hit && raycastHit.pickedMesh.name === "sphere") { //.hit is a default method to see if the ray actually hit an object and .pickedMesh returns the object that was hit
+        const decal = MeshBuilder.CreateDecal(  "decal", //name
+        raycastHit.pickedMesh, //object (sphere that was hit by raycast)
+        {
+          position: raycastHit.pickedPoint,//the position point that raycast hit the object
+          normal: raycastHit.getNormal(true),
+          size: new Vector3(1, 1, 1),
+        }
+        );
+
+        decal.material =
+          this.splatters[Math.floor(Math.random() * this.splatters.length)]; //takes randomly 1 out of 3 color materials -> apply it to the mouseClick's position
+
+        decal.setParent(raycastHit.pickedMesh); //so that it can follow the sphere when it moves and not floating in the air lol
+
+        raycastHit.pickedMesh.physicsImpostor.applyImpulse(
+          ray.direction.scale(5),
+          raycastHit.pickedPoint
+        );//apply force to the sphere -> roll the sphere onClick
+      }//if the ray hits the sphere, the sphere would get a random splatter on it
+    };
+  }
+}
+```
 
