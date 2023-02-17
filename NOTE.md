@@ -49,6 +49,7 @@ To enable Physics Force
     - https://www.babylonjs.com/tools/ibl/
     - https://sandbox.babylonjs.com/
     - https://www.toptal.com/developers/keycode
+    - https://www.mixamo.com/
 - To explore:
     - https://www.youtube.com/watch?v=FaMJd0f34rA
     - https://www.babylonjs.com/
@@ -1252,3 +1253,39 @@ export class Raycasting {
   }
 ```
 
+# --------------------17) Character Animations---------------------
+## Download character from https://www.kenney.nl/assets/animated-characters-2
+## Go to https://www.mixamo.com/
+Gotta do this since the animations associated to the character dont work in BabylonJS according to the tuto
+- Upload the character(in /Model folder)
+- Choose the animation (in this case we look for 3 animations: idle, jump and run)
+- Download:
+  - Format: FBX Binary(.fbx)
+  - Skin: With Skin
+  - Frames per Second: 60
+  - Keyframe Reduction: none
+  - For running: Check "In Place"-> easier to work with since the character will not run automatically
+
+## Applies animations downloaded to the character:
+This is a practical Blender tuto so again rewatch it here: https://youtu.be/vO4tQMCW3AQ?t=387  
+
+## Test .glb file of updated character in https://sandbox.babylonjs.com/ 
+
+## Code
+```javascript
+  async CreateCharacter(): Promise<void> {
+    const { meshes, animationGroups } = await SceneLoader.ImportMeshAsync( //grasps also animationGroups from the file 
+      "",
+      "./models/",
+      "character.glb"
+    );
+
+    meshes[0].rotate(Vector3.Up(), Math.PI); //rotates the character by 180 degree, since by default we will see the character from the back
+
+    console.log("animation groups", animationGroups); // idle, jump, run
+
+    animationGroups[0].stop(); //stop the idle animation (by default it will get played since its the first one)
+
+    animationGroups[2].play(true); //applies run animation to the character
+  }
+```
