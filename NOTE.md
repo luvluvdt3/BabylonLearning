@@ -1254,6 +1254,7 @@ export class Raycasting {
 ```
 
 # --------------------17) Character Animations---------------------
+*[CharacterAnimations]*
 ## Download character from https://www.kenney.nl/assets/animated-characters-2
 ## Go to https://www.mixamo.com/
 Gotta do this since the animations associated to the character dont work in BabylonJS according to the tuto
@@ -1287,5 +1288,36 @@ This is a practical Blender tuto so again rewatch it here: https://youtu.be/vO4t
     animationGroups[0].stop(); //stop the idle animation (by default it will get played since its the first one)
 
     animationGroups[2].play(true); //applies run animation to the character
+  }
+```
+
+# --------------------18) Animated Cutscene---------------------
+*[Cutscene]*
+``` javascript
+  async CreateCutscene(): Promise<void> {
+    const camKeys = []; //positions changes for camera
+    const fps = 60; //frame per second
+    const camAnim = new Animation(
+      "camAnim",
+      "position",
+      fps,
+      Animation.ANIMATIONTYPE_VECTOR3,
+      Animation.ANIMATIONLOOPMODE_CONSTANT,
+      //true //enables blendingEffect of camera 
+    );
+
+    //applies position changes onto the camera 
+    camKeys.push({ frame: 0, value: new Vector3(10, 2, -10) });
+    camKeys.push({ frame: 5 * fps, value: new Vector3(-6, 2, -10) });
+    camKeys.push({ frame: 8 * fps, value: new Vector3(-6, 2, -10) });
+    camKeys.push({ frame: 12 * fps, value: new Vector3(0, 3, -16) });
+    //going from left(main character) to right(zombies)
+    camAnim.setKeys(camKeys);
+
+    this.camera.animations.push(camAnim);
+
+    await this.scene.beginAnimation(this.camera, 0, 12 * fps).waitAsync(); //do the camera animation and makes sur it ended before doing next action
+
+    this.EndCutscene();
   }
 ```
