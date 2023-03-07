@@ -1,7 +1,7 @@
 # General stuffs
 ## Tuto link: https://www.youtube.com/watch?v=NLZuUtiL50A&list=PLym1B0rdkvqhuCNSXzxw6ofEkrpYI70P4&index=1
 ## npm i -g @vue/cli  
-To install globally framwork Vue.js
+To install globally framework Vue.js
 
 ## If error "vue.ps1 cannot be loaded because running scripts is disabled on this system" :
  - Open Windows Powersell as Admin
@@ -56,7 +56,7 @@ To enable Physics Force
 ## Blender:
 - Move around: Middle mouse press
 - Pan around: SHIFT + Middle mouse
-- Zoon: Scroll mouse
+- Zoom: Scroll mouse
 - See material/texture of object: red round button at the right bottom (just right on the chessboard one)
 ## TODO:
 - Attention, if open the site with small screen then put it back to big screen-> all pixel flurry sh*t -> any solution?
@@ -1402,4 +1402,48 @@ export class AnimEvents {
     deathAnim.addEvent(deathEvt);
   }
 }
+```
+
+# ------------------20) Animation Blending--------------------
+Kinda like a smooth transition of animations (like turning from "idle" to "running" would be smooth and not abruptedly change the character's position) 
+```javascript
+async CreateCharacter(): Promise<void> {
+    const { meshes, animationGroups } = await SceneLoader.ImportMeshAsync(
+      "",
+      "./models/",
+      "character_blending.glb"
+    );
+
+    meshes[0].rotate(Vector3.Up(), -Math.PI);
+
+
+    const idle = animationGroups[0];
+    const run = animationGroups[1];
+
+
+    this.scene.onPointerDown = evt => {
+      if(evt.button === 2) //right click-> turn from current animation to run
+        this.scene.onBeforeRenderObservable.runCoroutineAsync(this.animationBlending(run, idle))
+
+      if(evt.button === 0) //onClick -> turn from current animation to idle
+        this.scene.onBeforeRenderObservable.runCoroutineAsync(this.animationBlending(idle, run))
+    }
+  }
+
+  *animationBlending(toAnim: AnimationGroup, fromAnim: AnimationGroup): AsyncCoroutine<void>{ //kinda weird but gotta put "*" to declare Coroutine variable
+    //toAnim: replacement animation that we wanna change to 
+    //fromAnim: current playing animation
+      let currentWeight = 1; //so the idea is decrease gradually the weight of the animation from 1->0 so that it can change smoothly to another type of animation which also got weight changed slowly from 0->1
+      let newWeight = 0;
+
+      toAnim.play(true); //play the replacement animation
+
+      while(newWeight< 1){
+          newWeight +=0.01; 
+          currentWeight -= 0.01;
+          toAnim.setWeightForAllAnimatables(newWeight); //the replacement animation's weight gradully inscrease
+          fromAnim.setWeightForAllAnimatables(currentWeight); //gradually decrease
+          yield; //very important to make Coroutine works, or else there would be probs with the frames
+      }
+  }
 ```

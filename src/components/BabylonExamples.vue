@@ -1,18 +1,18 @@
 <template>
   <main>
-    <p>Animation Events</p>
+    <p>Animation Blending</p>
     <canvas></canvas>
   </main>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { AnimEvents } from "@/BabylonExemples/AnimEvents";
+import { AnimBlending } from "@/BabylonExemples/AnimBlending";
 export default defineComponent({
   name: "BabylonExamples",
   mounted() {
     const canvas = document.querySelector("canvas") as HTMLCanvasElement;
-    new AnimEvents(canvas);
+    new AnimBlending(canvas);
   },
 });
 </script>
