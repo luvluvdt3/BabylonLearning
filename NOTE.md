@@ -1,13 +1,15 @@
 # General stuffs
-## Tuto link: https://www.youtube.com/watch?v=NLZuUtiL50A&list=PLym1B0rdkvqhuCNSXzxw6ofEkrpYI70P4&index=1
-## npm i -g @vue/cli  
+## Tuto link:
+https://www.youtube.com/watch?v=NLZuUtiL50A&list=PLym1B0rdkvqhuCNSXzxw6ofEkrpYI70P4&index=1
+## Init project:
+### - npm i -g @vue/cli  
 To install globally framework Vue.js
 
-## If error "vue.ps1 cannot be loaded because running scripts is disabled on this system" :
+### - If error "vue.ps1 cannot be loaded because running scripts is disabled on this system" :
  - Open Windows Powersell as Admin
  - Set-ExecutionPolicy -Scope LocalMachine Unrestricted  -> choose A
 
-## vue create b101  (b101 is a random name0)
+### - vue create b101  (b101 is a random name0)
  - Y
  - Manually
  - TypeScript (ko thay đổi những cái đc chọn by default) 
@@ -20,18 +22,20 @@ To install globally framework Vue.js
  - N (or yes lol)
  - Use NPM
 
-## npm run serve
+### - npm run serve
 
-## npm i @babylonjs/core
+## Install:
+
+### - npm i @babylonjs/core
 Basically every components of BabylonJS
 
-## npm i @babylonjs/loaders
+### - npm i @babylonjs/loaders
 To load models
 
-## npm i cannon @types/cannon
+### - npm i cannon @types/cannon
 To enable Physics
 
-## npm i ammojs-typed
+### - npm i ammojs-typed
 To enable Physics Force
 
 ## Websites:
@@ -1405,6 +1409,7 @@ export class AnimEvents {
 ```
 
 # ------------------20) Animation Blending--------------------
+*[AnimBlending]*
 Kinda like a smooth transition of animations (like turning from "idle" to "running" would be smooth and not abruptedly change the character's position) 
 ```javascript
 async CreateCharacter(): Promise<void> {
@@ -1446,4 +1451,67 @@ async CreateCharacter(): Promise<void> {
           yield; //very important to make Coroutine works, or else there would be probs with the frames
       }
   }
+```
+
+# -------------------------21) Playing Audio-----------------------------
+*[AudioExample]*
+## Background audio
+```javascript
+  async CreateEnvironment(): Promise<void> {
+    await SceneLoader.ImportMeshAsync("", "./models/", "Prototype_Level2.glb");
+
+    const backgroundMusic = new Sound(
+      "backgroundMusic", //name
+      "./audio/terror_ambience.mp3", //url
+      this.scene, //scene?
+      null, //readyToPlayCallBack? 
+      {
+        volume: 0, //iniitial volume = 0 
+        autoplay: true,
+      }
+    );
+    backgroundMusic.setVolume(0.75, 30); //gradually increase the volume from 0->0.75 in 30 secs
+  }
+```
+## When we get close to the zombie -> plays the zombie sound
+```javascript
+ async CreateZombie(): Promise<void> {
+    const { meshes, animationGroups } = await SceneLoader.ImportMeshAsync(
+      "",
+      "./models/",
+      "zombie_growl.glb"
+    );
+    meshes[0].rotate(Vector3.Up(), Math.PI / 2);
+    meshes[0].position = new Vector3(-7, 0, 0);
+
+    animationGroups[0].stop();
+
+    const growlFx = new Sound(
+      "growlFx",
+      "./audio/growl.mp3",
+      this.scene,
+      null,
+      {
+        spatialSound: true,
+        maxDistance: 10, //if we are within 10 units from the zombie, we can hear the sound (the closer the louder). By default=100. Gotta attach the sound to a certain potion/mesh to make this work like below:
+      }
+    );
+
+    //growlFx.attachToMesh(meshes[0]) //can attach this sound to the zombie's mesh, or:
+    growlFx.setPosition(new Vector3(-7, 0, 0)); //attach sound to the zombie's positon. Both works lol
+    growlFx.setPlaybackRate(1.87); //increase the audio's speed. Can also slow the audio down by putting value < 1.
+
+    const growlAnim = animationGroups[0].targetedAnimations[0].animation;
+
+    const growlEvt = new AnimationEvent(
+      70, //frame (of the zombie's animation)
+      () => { //action
+        if (!growlFx.isPlaying) growlFx.play();
+      },
+      false //onlyOnce?
+    );
+    growlAnim.addEvent(growlEvt);
+    animationGroups[0].play(true);
+  }
+}
 ```
